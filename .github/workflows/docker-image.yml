@@ -48,11 +48,11 @@ jobs:
           set -x
           CURRENT_DATE=$(date '+%Y-%m-%dT%R:%S%z')
           SHA=$(git rev-parse --verify HEAD)
-          URL=https://github.com/chrismaul/maul-os-k8s
+          URL=https://github.com/chrismaul/maul-os-desktop
           docker build \
             --build-arg VERS=$VERS \
             --pull --no-cache \
-            -t maulc/maul-os-k8s:$VERS \
+            -t maulc/maul-os-desktop:$VERS \
             --label "org.opencontainers.image.created=${CURRENT_DATE}" \
             --label "org.opencontainers.image.url=$URL" \
             --label "org.opencontainers.image.documentation=$URL" \
@@ -60,7 +60,6 @@ jobs:
             --label "org.opencontainers.image.version=$VERS" \
             --label "org.opencontainers.image.revision=${SHA}" \
             .
-          docker push maulc/maul-os-k8s:$VERS
-          docker tag maulc/maul-os-k8s:$VERS maulc/maul-os-k8s:latest
-          docker push maulc/maul-os-k8s:latest
-
+          docker push maulc/maul-os-desktop:$VERS
+          docker tag maulc/maul-os-desktop:$VERS maulc/maul-os-desktop:latest
+          docker push maulc/maul-os-desktop:latest
