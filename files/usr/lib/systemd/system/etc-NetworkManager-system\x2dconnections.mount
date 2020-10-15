@@ -1,0 +1,12 @@
+[Unit]
+Description=systemd home directory
+Before=NetworkManager.service
+
+[Mount]
+What=/dev/disk/by-label/data
+Where=/etc/NetworkManager/system-connections
+Type=btrfs
+Options=subvol=etc/NetworkManager/system-connections,defaults,relatime
+
+[Install]
+RequiredBy=NetworkManager.service

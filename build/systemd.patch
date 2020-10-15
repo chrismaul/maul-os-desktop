@@ -1,0 +1,44 @@
+diff --git a/trunk/PKGBUILD b/trunk/PKGBUILD
+index efd4f38..ce43880 100644
+--- a/trunk/PKGBUILD
++++ b/trunk/PKGBUILD
+@@ -6,7 +6,7 @@ pkgbase=systemd
+ pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
+ _tag='27d60e13ed5db2194cac14ad4cc86ad06d753805' # git rev-parse v${pkgver}
+ pkgver=246.6
+-pkgrel=1
++pkgrel=10
+ arch=('x86_64')
+ url='https://www.github.com/systemd/systemd'
+ makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
+@@ -14,7 +14,7 @@ makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
+              'libmicrohttpd' 'libxcrypt' 'libxslt' 'util-linux' 'linux-api-headers'
+              'python-lxml' 'quota-tools' 'shadow' 'gnu-efi-libs' 'git'
+              'meson' 'libseccomp' 'pcre2' 'audit' 'kexec-tools' 'libxkbcommon'
+-             'bash-completion' 'p11-kit' 'systemd')
++             'bash-completion' 'p11-kit' 'systemd' 'libfido2')
+ options=('strip')
+ validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <lennart@poettering.net>
+               '5C251B5FC54EB2F80F407AAAC54CA336CFEB557E') # Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+@@ -109,10 +109,11 @@ build() {
+     -Dlibidn2=true
+     -Dlz4=true
+     -Dman=true
++    -Dtests=false
+ 
+     # We disable DNSSEC by default, it still causes trouble:
+     # https://github.com/systemd/systemd/issues/10579
+-    
++
+     -Ddbuspolicydir=/usr/share/dbus-1/system.d
+     -Ddefault-dnssec=no
+     -Ddefault-hierarchy=hybrid
+@@ -145,7 +146,7 @@ package_systemd() {
+            'libgcrypt' 'libxcrypt' 'libcrypt.so' 'systemd-libs' 'libidn2' 'libidn2.so' 'lz4' 'pam'
+            'libelf' 'libseccomp' 'libseccomp.so' 'util-linux' 'libblkid.so'
+            'libmount.so' 'xz' 'pcre2' 'audit' 'libaudit.so' 'libp11-kit'
+-           'libp11-kit.so' 'openssl')
++           'libp11-kit.so' 'openssl' 'libfido2')
+   provides=('nss-myhostname' "systemd-tools=$pkgver" "udev=$pkgver")
+   replaces=('nss-myhostname' 'systemd-tools' 'udev')
+   conflicts=('nss-myhostname' 'systemd-tools' 'udev')

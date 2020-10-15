@@ -1,0 +1,14 @@
+[Unit]
+After=var-lib-firstboot.mount
+Requires=var-lib-firstboot.mount
+[Service]
+EnvironmentFile=/var/lib/firstboot/settings.conf
+ExecStart=
+ExecStart=systemd-firstboot --force \
+  --locale=${FIRSTBOOT_LOCALE} \
+  --keymap=${FIRSTBOOT_KEYMAP} \
+  --timezone=${FIRSTBOOT_TIMEZONE} \
+  --hostname=${FIRSTBOOT_HOSTNAME} \
+  --machine-id=${FIRSTBOOT_MACHINE_ID}
+[Install]
+WantedBy=multi-user.target

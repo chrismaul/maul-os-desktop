@@ -39,7 +39,7 @@ install() {
         $systemdsystemunitdir/lvm2-pvscan@.service \
         $systemdsystemunitdir/lvm2-monitor.service \
         $systemdsystemunitdir/sysinit.target.wants/lvm2-monitor.service \
-	      $systemdutildir/system-generators/lvm2-activation-generator
+        $systemdutildir/system-generators/lvm2-activation-generator
 
     inst_multiple -o thin_dump thin_restore thin_check thin_repair \
                   cache_dump cache_restore cache_check cache_repair \
