@@ -96,7 +96,8 @@ RUN pacman -Syyu --needed --noconfirm \
     wpa_supplicant \
     yubikey-manager \
     yubikey-personalization \
-    yubioath-desktop
+    yubioath-desktop \
+    nmap
 
 COPY --from=packages /build/packages /tmp/packages
 
@@ -151,6 +152,7 @@ RUN echo \
   firstboot.service \
   var-lib-systemd-home.mount \
   var-lib-firstboot.mount \
+  NetworkManager.service \
   'etc-NetworkManager-system\\x2dconnections.mount' \
   | xargs -n 1 systemctl enable
 
