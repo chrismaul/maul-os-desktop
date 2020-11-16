@@ -44,29 +44,29 @@ EOP
     cp -av  ~build/build/$i/*.pkg.tar* $PKG_DEST_DIR
   done
 done
-su - build << EOP
-set -ex
+# su - build << EOP
+# set -ex
 
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-key C54CA336CFEB557E
+# gpg --keyserver hkps://keyserver.ubuntu.com --recv-key C54CA336CFEB557E
 
-git clone https://github.com/archlinux/svntogit-packages.git -b packages/systemd --depth 1 ~/build/systemd
+# git clone https://github.com/archlinux/svntogit-packages.git -b packages/systemd --depth 1 ~/build/systemd
 
-cd ~/build/systemd
-patch -p1 < $SRCDIR/systemd.patch
-cd trunk
-(
-  source PKGBUILD
-  if [ -n "\$validpgpkeys" ]
-  then
-    gpg --keyserver hkps://keyserver.ubuntu.com --recv-key \$validpgpkeys
-  fi
-  if [ -n "\${makedepends}" ]
-  then
-    sudo pacman -S --noconfirm --needed \${makedepends[@]}
-  fi
-)
-export PKGEXT=.pkg.tar
-makepkg -sd --noconfirm --needed
-EOP
-mkdir -p "$PKG_DEST_DIR"
-cp -av  ~build/build/systemd/trunk/*.pkg.tar* $PKG_DEST_DIR
+# cd ~/build/systemd
+# patch -p1 < $SRCDIR/systemd.patch
+# cd trunk
+# (
+#   source PKGBUILD
+#   if [ -n "\$validpgpkeys" ]
+#   then
+#     gpg --keyserver hkps://keyserver.ubuntu.com --recv-key \$validpgpkeys
+#   fi
+#   if [ -n "\${makedepends}" ]
+#   then
+#     sudo pacman -S --noconfirm --needed \${makedepends[@]}
+#   fi
+# )
+# export PKGEXT=.pkg.tar
+# makepkg -sd --noconfirm --needed
+# EOP
+# mkdir -p "$PKG_DEST_DIR"
+# cp -av  ~build/build/systemd/trunk/*.pkg.tar* $PKG_DEST_DIR
