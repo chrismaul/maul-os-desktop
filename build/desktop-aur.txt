@@ -1,5 +1,4 @@
-brave-bin
+brave-nightly-bin
 motionpro
 gnupg-scdaemon-shared-access
 slack-desktop
-brave-nightly-bin
