@@ -172,6 +172,8 @@ RUN sed -e 's|C! /etc/pam.d|C /etc/pam.d|' -i /usr/lib/tmpfiles.d/etc.conf && \
   mv kernel/x86/microcode/GenuineIntel.bin intel-ucode/ && \
   rm -r kernel
 
+RUN mv /opt /usr/local/opt
+
 ARG VERS=dev
 RUN sed -e "s/%VERS%/$VERS/g" < /etc/os-release.template > /usr/lib/os-release && cat /usr/lib/os-release
 
