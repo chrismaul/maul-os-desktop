@@ -10,9 +10,12 @@ fi
 VG_NAME=${VG_NAME:-root}
 HOST_ROOT=/host
 
+KERN_MATCH="${1:-[0-9]}"
+KER_VER=$(ls /output/ | grep "modules_.*${KERN_MATCH}_squashfs" | cut -d '_' -f 2)
+
 SRC=/output/root.squashfs
 SRC_VERITY=/output/root.verity
-KERNEL=/output/kernel.efi
+KERNEL=/output/kernel-${KER_VER}.efi
 
 if ! [ -e /dev/root/maul-os-$BUILD_ID ]
 then
@@ -40,7 +43,7 @@ fi
 
 cp -v $KERNEL $HOST_ROOT/boot/efi/Linux/maul-os-$BUILD_ID.efi
 
-for MOD_LOC in /output/modules_*_squashfs
+for MOD_LOC in /output/modules_${KER_VER}_squashfs
 do
   MOD_VERS=$(echo $MOD_LOC | cut -d _ -f 2)
   if ! [ -e "/dev/root/modules-${BUILD_ID}-$MOD_VERS" ]

@@ -1,10 +1,17 @@
-FROM archlinux/base AS packages
+FROM archlinux AS packages
 COPY build /build
 RUN /build/build-packages.sh
 
-FROM archlinux/base AS root
+FROM archlinux AS root
 ARG ARCH_MIRROR=http://mirror.math.princeton.edu/pub/archlinux
 RUN sed -i "1s|^|Server = $ARCH_MIRROR/\$repo/os/\$arch\n|" /etc/pacman.d/mirrorlist
+
+RUN pacman-key --init
+
+RUN curl -s https://raw.githubusercontent.com/linux-surface/linux-surface/master/pkg/keys/surface.asc \
+  | pacman-key --add - && pacman-key --finger 56C464BAAC421453 && pacman-key --lsign-key 56C464BAAC421453
+
+RUN echo "[linux-surface]" >> /etc/pacman.conf && echo "Server = https://pkg.surfacelinux.com/arch/"  >> /etc/pacman.conf
 
 RUN pacman -Syyu --needed --noconfirm \
     acpi \
@@ -53,7 +60,6 @@ RUN pacman -Syyu --needed --noconfirm \
     kubectx \
     libfido2 \
     libp11 \
-    libu2f-host \
     linux \
     linux-firmware \
     linux-headers \
@@ -71,7 +77,6 @@ RUN pacman -Syyu --needed --noconfirm \
     pcsclite \
     python-netifaces \
     rsync \
-    ruby-bundler \
     sbsigntools \
     screen \
     socat \
@@ -97,11 +102,24 @@ RUN pacman -Syyu --needed --noconfirm \
     yubikey-manager \
     yubikey-personalization \
     yubioath-desktop \
-    nmap
+    nmap \
+    code \
+    xdg-desktop-portal-gtk \
+    xdg-desktop-portal \
+    pipewire-pulse \
+    skopeo \
+    seahorse \
+    xf86-video-intel \
+    xf86-input-libinput \
+    kitty \
+    intel-media-dirver
 
 COPY --from=packages /build/packages /tmp/packages
 
+RUN find /tmp/packages -iname zoom\*_orig\* -delete
 RUN yes | pacman -U /tmp/packages/*
+
+RUN yes | pacman -S --needed --noconfirm linux-surface linux-surface-headers iptsd
 
 RUN rm -r /tmp/packages
 
@@ -138,6 +156,7 @@ RUN for i in \
   etc/fancontrol \
   etc/ethertypes \
   etc/man_db.conf \
+  etc/pipewire/ \
   etc/NetworkManager/; \
 do \
   [ -e "/$i" ] && rsync -av /$i /usr/share/factory/$i ; \
@@ -152,8 +171,12 @@ RUN echo \
   firstboot.service \
   var-lib-systemd-home.mount \
   var-lib-firstboot.mount \
+  var-lib-bluetooth.mount \
   NetworkManager.service \
   'etc-NetworkManager-system\\x2dconnections.mount' \
+  systemd-homed.service \
+  restart-systemd-homed.service \
+  iptsd.service \
   | xargs -n 1 systemctl enable
 
 RUN mkdir -p /usr/lib/systemd/user/default.target.wants && \
@@ -171,6 +194,8 @@ RUN sed -e 's|C! /etc/pam.d|C /etc/pam.d|' -i /usr/lib/tmpfiles.d/etc.conf && \
   cat /boot/intel-ucode.img | cpio -idmv && \
   mv kernel/x86/microcode/GenuineIntel.bin intel-ucode/ && \
   rm -r kernel
+
+RUN validity-sensors-firmware
 
 RUN mv /opt /usr/local/opt
 
@@ -200,7 +225,10 @@ RUN mksquashfs usr etc /output/root.squashfs && \
 
 COPY secureboot /etc/secureboot
 
-RUN KER_VER=$(ls /usr/lib/modules/| head -n1) && dracut --force --uefi --kver $KER_VER /output/kernel.efi
+RUN for KER_VER in $(ls /usr/lib/modules/);\
+  do \
+   dracut --force --uefi --kver $KER_VER /output/kernel-$KER_VER.efi;\
+  done
 
 FROM alpine as installer
 RUN apk add --no-cache lvm2 coreutils util-linux cryptsetup bash psmisc device-mapper

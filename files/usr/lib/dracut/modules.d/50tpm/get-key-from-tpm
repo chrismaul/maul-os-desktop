@@ -7,10 +7,12 @@ done
 
 echo "Waiting for TPM Dev"
 
-while [ ! -e /dev/tpm0 ]
+CNT=0
+while [ ! -e /dev/tpm0 ] && [ "$CNT" -lt 10 ]
 do
   /usr/bin/sleep 1
   echo "."
+  CNT=$((CNT+1))
 done
 
 echo "Unlocking key"

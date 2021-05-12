@@ -1,0 +1,11 @@
+[Unit]
+Description=Restart systemd-homed
+After=gdm.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=systemctl restart systemd-homed
+
+[Install]
+WantedBy=multi-user.target

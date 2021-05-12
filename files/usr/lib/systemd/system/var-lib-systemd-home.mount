@@ -9,4 +9,4 @@ Type=btrfs
 Options=subvol=var/lib/systemd/home,defaults,relatime
 
 [Install]
-WantedBy=systemd-homed.service
+RequiredBy=systemd-homed.service

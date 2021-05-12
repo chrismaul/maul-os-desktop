@@ -13,11 +13,13 @@ depends() {
     return 0
 }
 
-
-
 # called by dracut
 install() {
-  inst /usr/lib/systemd/systemd-veritysetup
-  inst $systemdutildir/system-generators/systemd-veritysetup-generator
+  inst_multiple \
+    $systemdsystemunitdir/veritysetup-pre.target \
+    $systemdsystemunitdir/veritysetup.target \
+    $systemdutildir/system-generators/systemd-veritysetup-generator \
+    /usr/lib/systemd/systemd-veritysetup
   dracut_instmods dm-verity
+  $SYSTEMCTL -q --root "$initdir" add-wants sysinit.target veritysetup.target
 }

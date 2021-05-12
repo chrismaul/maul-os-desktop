@@ -1,4 +1,8 @@
-brave-nightly-bin
+libwacom-surface
+brave-bin
 motionpro
 gnupg-scdaemon-shared-access
 slack-desktop
+python-validity
+open-fprintd
+fprintd-clients

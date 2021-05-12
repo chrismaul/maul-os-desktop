@@ -1,0 +1,12 @@
+[Unit]
+Description=systemd home directory
+Before=systemd-journald.service
+
+[Mount]
+What=/dev/disk/by-label/data
+Where=/var/log
+Type=btrfs
+Options=subvol=var/log,defaults,relatime
+
+[Install]
+RequiredBy=systemd-journald.service

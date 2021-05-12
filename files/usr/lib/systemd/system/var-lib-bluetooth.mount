@@ -1,0 +1,12 @@
+[Unit]
+Description=systemd home directory
+Before=bluetooth.service
+
+[Mount]
+What=/dev/disk/by-label/data
+Where=/var/lib/bluetooth
+Type=btrfs
+Options=subvol=var/lib/bluetooth,defaults,relatime
+
+[Install]
+RequiredBy=bluetooth.service

@@ -9,4 +9,4 @@ Type=btrfs
 Options=subvol=var/lib/firstboot,defaults,relatime
 
 [Install]
-WantedBy=firstboot.service
+RequiredBy=firstboot.service

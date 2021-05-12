@@ -43,6 +43,7 @@ install() {
 
     inst_multiple -o thin_dump thin_restore thin_check thin_repair \
                   cache_dump cache_restore cache_check cache_repair \
-                  era_check era_dump era_invalidate era_restore
+                  era_check era_dump era_invalidate era_restore \
+                    lvmconfig
 
 }

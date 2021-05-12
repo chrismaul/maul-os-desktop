@@ -1,9 +1,10 @@
-#!/bin/bash
+#!/bin/bash -x
 set -ex
 export SRCDIR=/build
 export DESTDIR=/build
 pacman -Syu --noconfirm
-pacman --needed -Sy --noconfirm arch-install-scripts base-devel git sudo awk libffi
+
+pacman --needed -Sy --noconfirm arch-install-scripts base-devel git sudo awk libffi --noscriptlet
 useradd -m build
 echo 'build ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/build
 chmod 0440 /etc/sudoers.d/build
@@ -14,6 +15,13 @@ do
   PKG_DEST_DIR="$DESTDIR/packages"
   for i in $(cat $PROFILE  | grep -v '^#' | grep -v '^ *$' | sort -u)
   do
+    if [ "$i" = "fprintd-clients" ]
+    then
+      pacman --needed -Sy --noconfirm --noscriptlet polkit dbus-glib
+    elif [ "$i" = "libwacom-surface" ]
+    then
+      pacman --needed -Sy --noconfirm --noscriptlet libgudev cmake python-libevdev python-pyudev python-pytest
+    fi
     if ! [ -e ~build/build/$i/*.pkg.tar* ]
     then
       su - build << EOP
