@@ -6,3 +6,6 @@ slack-desktop
 python-validity
 open-fprintd
 fprintd-clients
+plymouth
+gdm-plymouth
+plymouth-theme-arch10

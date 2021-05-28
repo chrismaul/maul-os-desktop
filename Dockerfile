@@ -1,6 +1,26 @@
 FROM archlinux AS packages
-COPY build /build
-RUN /build/build-packages.sh
+RUN pacman -Syu --noconfirm
+RUN pacman --needed -Sy --noconfirm base-devel git sudo
+RUN useradd -m build && \
+  echo 'build ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/build && \
+  chmod 0440 /etc/sudoers.d/build && \
+  visudo -c
+
+RUN echo "cd ; git clone https://aur.archlinux.org/pikaur.git; \
+  cd pikaur; \
+  makepkg -fsri --needed --noconfirm; \
+  " | sudo su - build
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm slack-desktop
+RUN sudo -u build -i gpg --keyserver hkps://keyserver.ubuntu.com --recv-key E23B7E70B467F0BF
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm libwacom-surface
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm brave-bin
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm python-validity
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm open-fprintd
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm fprintd-clients
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm plymouth
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm plymouth-theme-arch10
+RUN sudo -u build -i gpg --keyserver hkps://keyserver.ubuntu.com --recv-key 528897B826403ADA
+RUN sudo -u build -i pikaur --needed -Sw --noconfirm gnupg-scdaemon-shared-access
 
 FROM archlinux AS root
 ARG ARCH_MIRROR=http://mirror.math.princeton.edu/pub/archlinux
@@ -112,9 +132,10 @@ RUN pacman -Syyu --needed --noconfirm \
     xf86-video-intel \
     xf86-input-libinput \
     kitty \
-    intel-media-dirver
+    intel-media-driver \
+    terminus-font
 
-COPY --from=packages /build/packages /tmp/packages
+COPY --from=packages /home/build/.cache/pikaur/pkg /tmp/packages
 
 RUN find /tmp/packages -iname zoom\*_orig\* -delete
 RUN yes | pacman -U /tmp/packages/*
@@ -195,7 +216,9 @@ RUN sed -e 's|C! /etc/pam.d|C /etc/pam.d|' -i /usr/lib/tmpfiles.d/etc.conf && \
   mv kernel/x86/microcode/GenuineIntel.bin intel-ucode/ && \
   rm -r kernel
 
-RUN validity-sensors-firmware
+RUN validity-sensors-firmware || true
+
+RUN sed -ie "s/^Theme=.*$/Theme=arch10/" /etc/plymouth/plymouthd.conf
 
 RUN mv /opt /usr/local/opt
 
